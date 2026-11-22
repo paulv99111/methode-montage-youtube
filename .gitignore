@@ -1,0 +1,6 @@
+branding/
+*.mp4
+*.mov
+*.wav
+.DS_Store
+__pycache__/
