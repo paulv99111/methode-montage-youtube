@@ -8,7 +8,7 @@ Ce que tu fais, dans l'ordre, de la prise brute au fichier final :
 
 1. **Questions de départ** (section 1) : chaîne avec ou sans visage, lien de la chaîne, site, lien ou code affilié ChatSEO du créateur.
 2. **Étape 0, l'identité visuelle** (section 2) : `scripts/branding.py`, validation du créateur.
-3. **La coupe propre** (section 3) : début, fin, silences, ratés, reprises, puis la liste des répétitions à vérifier que le créateur tranche.
+3. **La coupe propre** (section 3) : début, fin, silences, ratés, reprises et faux départs coupés, puis la courte liste des répétitions douteuses que le créateur tranche.
 4. **L'audio** (section 4) : Adobe Podcast Enhance sur toute la coupe.
 5. **Le plan des inserts** (sections 5 et 6) : la liste de tout ce qui passera à l'écran, montrée au créateur par type, validée avant toute fabrication.
 6. **La fabrication par morceaux** (section 7) : l'accroche seule d'abord, puis des morceaux de ~5 minutes, chacun vérifié puis montré au créateur.
@@ -108,19 +108,23 @@ But : une vidéo qui s'ouvre sur le premier mot, finit sur le dernier, sans blan
 - **Prouve chaque coupe** : mesure l'enveloppe dans les 60 ms juste à l'intérieur de chaque bord retiré (elle doit être très en dessous du niveau de la voix, sinon un mot a été mordu), puis retranscris la coupe et compare ses mots à la transcription d'avant ; vérifie par son nom le premier mot qui reprend après chaque coupe (le mot manquant est l'erreur typique).
 - Avant d'ajouter un mot que le petit modèle a raté (parce qu'un plus gros l'a entendu), mesure le niveau sonore à cet endroit (`volumedetect`) : un gros modèle invente volontiers un « Ensuite » sur du bruit de pièce.
 
-### 3.7 Les répétitions : une liste, le créateur tranche
+### 3.7 Les répétitions : le faux départ est coupé, le doute va au créateur
 
-Hors accroche, **tu ne coupes jamais une répétition toi-même**. Pourquoi : la plupart sont son style (insistance, liste, reprise pour expliquer), et une coupe à tort abîme sa façon de parler.
+**Un départ abandonné puis redit est coupé par toi, avec ou sans silence entre les deux** (accroche et corps). Pourquoi : le spectateur l'entend comme une erreur oubliée (« qu'est-ce que, qu'est-ce que c'est »). L'insistance, les listes et les parallèles restent : c'est sa façon de parler.
 
-1. Marque chaque endroit ENCORE dans la coupe qui peut être une erreur : une phrase dite deux fois, une voix sans aucun mot Whisper (souvent un premier essai effacé), et toute reprise de la même idée avec d'autres mots que tu repères en LISANT la transcription (jamais par une expression régulière). L'emphase « X et X » n'en est pas.
+1. Marque chaque endroit ENCORE dans la coupe qui peut être une erreur : une phrase dite deux fois, une voix sans aucun mot Whisper (souvent un premier essai effacé), et toute reprise de la même idée avec d'autres mots que tu repères en LISANT la transcription (jamais par une expression régulière). L'emphase « X et X » n'en est pas. Une transcription ordinaire ne suffit pas (Whisper efface les faux départs) : cherche sur deux lectures qui ne nettoient pas la parole, et réunis leurs répétitions en une seule liste :
+   - **les sons** : les phonèmes entendus, avec un modèle wav2vec2 de phonèmes (par exemple `facebook/wav2vec2-lv-60-espeak-cv-ft`, `pip install torch transformers`), et les suites de sons qui reviennent à moins de **4,5 s** d'écart ;
+   - **le mot à mot brut** : faster-whisper `large-v3` ET `large-v3-turbo`, par fenêtres de **8 s**, avec un `initial_prompt` lui-même plein de faux départs et sans aucun mot du sujet (« Je, je crois que, que le, le chat, euh, est, est parti »). Lis ce texte en entier. Il sert seulement à trouver les répétitions : la transcription de travail reste `small`, et une répétition vue par un seul modèle s'écoute avant d'être coupée.
 2. Donne à chaque endroit un verdict, les ratés d'abord :
    - **Raté (faux départ)** : il commence une phrase, s'arrête avant de la fermer et la redit à partir des mêmes premiers mots, en changeant souvent la fin. Rien ne ferme la première copie : ni point ni virgule dans les mots Whisper, aucun mot de liaison (et, mais, donc), au plus 3 mots avant la reprise. Un signal de reprise (pardon, attends, non, je recommence, euh + les mêmes mots) en fait un raté quelle que soit la ponctuation.
    - **Voulu** : une première copie fermée. Une liste ou un parallèle (« de tes offres, de tes prix »), une reprise des derniers mots pour les expliquer, une précision (« un fichier, donc un fichier avec... »), une question à laquelle il répond.
    - Un passage de voix sans mot est un raté jusqu'à ce qu'on l'ait écouté.
    - On garde la DERNIÈRE prise complète ; si la dernière est la cassée, on garde la précédente et la raison le dit.
-3. Montre la liste au créateur : pour chaque endroit, le temps, le texte, le verdict, et deux extraits audio (avant / après coupe proposée). Il choisit ce qui part. Seulement alors tu places chaque jointure (règles 3.6) et tu passes à la suite.
+3. **Coupe toi-même chaque raté** (une voix sans mot, seulement après l'avoir écoutée) et place sa jointure (règles 3.6) ; note-le dans le journal de coupe, visible et réversible dans l'éditeur (3.8). Garde chaque cas voulu.
+4. **Seuls les cas douteux vont au créateur** : pour chacun, le temps, le texte, ton verdict, et deux extraits audio (avant / après coupe proposée). Il choisit ce qui part, tu places les jointures, et seulement alors tu passes à la suite.
+5. Refais la recherche sur le film fini : aucun endroit jugé « à couper » n'y est encore, sinon le film n'est pas livré.
 
-**Exception, l'accroche : chaque idée n'y est dite qu'UNE fois.** Liste les idées de l'accroche (la promesse, la crédibilité, le problème, le résultat...), garde la prise la plus complète de chacune, et présente chaque coupe au créateur comme UN son par coupe, écrit en trois parties sur une ligne : la fin de ce qui précède, les mots retirés ~~barrés en entier~~ (tous les mots que le son saute, transcrits, jamais résumés), le début de ce qui suit. Il valide à l'oreille avant qu'un seul insert, zoom ou son soit fabriqué sur l'accroche. Vérifie chaque jointure en retranscrivant 2,5 s de chaque côté.
+**Dans l'accroche, en plus : chaque idée n'y est dite qu'UNE fois.** Liste les idées de l'accroche (la promesse, la crédibilité, le problème, le résultat...), garde la prise la plus complète de chacune, et présente chaque coupe au créateur comme UN son par coupe, écrit en trois parties sur une ligne : la fin de ce qui précède, les mots retirés ~~barrés en entier~~ (tous les mots que le son saute, transcrits, jamais résumés), le début de ce qui suit. Il valide à l'oreille avant qu'un seul insert, zoom ou son soit fabriqué sur l'accroche. Vérifie chaque jointure en retranscrivant 2,5 s de chaque côté.
 
 ### 3.8 L'éditeur de coupe
 
@@ -334,7 +338,7 @@ Demande-lui s'il veut des sous-titres incrustés. Si oui :
 - **Le rendu final est cadré exactement comme les aperçus validés** (un seul plan de zooms pour tout le film), avec des inserts en 4K natif si la source est 4K, en **60 fps**, jamais sous la cadence de la prise. Refuse un insert sans rendu 4K plus récent que son rendu 1080p. Compte ~6 s de rendu par seconde d'insert 4K 60 fps.
 - **Qualité d'abord** : livre à la résolution et au débit de la source, jamais en dessous (débit de la source x1,4, entre 8 et 100 Mb/s ; ~80 Mb/s pour du 4K 60). Ne fais pas passer la vidéo caméra par un moteur qui capture chaque image en JPEG : fais dessiner aux outils de motion seulement les calques (inserts, textes, sous-titres sur fond transparent) et laisse ffmpeg zoomer, composer et encoder la source.
 - **Un long film 4K se rend en segments** : coupe dans les trous entre inserts, au plus **18** inserts par segment, vérifie le nombre exact d'images de chaque segment, concatène la vidéo seule, puis ajoute l'audio mixé à la fin (concaténer avec l'audio en une étape a décalé la vidéo de 21 ms).
-- **Vérifications avant de livrer** : `ffprobe` (largeur, hauteur, cadence, débit) contre la source ; nombre d'images décodées (`ffprobe -count_frames`), pas seulement la durée annoncée ; la planche contact des textes derrière la tête et des sous-titres ; le contrôle de mouvement (fps, images immobiles, tremblement) ; le mix (section 8) ; l'appel à l'action avant 25 %.
+- **Vérifications avant de livrer** : `ffprobe` (largeur, hauteur, cadence, débit) contre la source ; nombre d'images décodées (`ffprobe -count_frames`), pas seulement la durée annoncée ; la planche contact des textes derrière la tête et des sous-titres ; le contrôle de mouvement (fps, images immobiles, tremblement) ; le mix (section 8) ; la recherche des répétitions sur le film fini (section 3.7) ; l'appel à l'action avant 25 %.
 - Livre le fichier final au créateur avec la liste des chapitres (temps de la coupe finale) pour sa description.
 
 ## 13. Les points de contrôle avec le créateur, et ses règles
@@ -342,7 +346,7 @@ Demande-lui s'il veut des sous-titres incrustés. Si oui :
 Tu montres et tu attends son « go » à chaque étape :
 
 1. Le branding (section 2).
-2. La liste des répétitions et des coupes de l'accroche (section 3.7).
+2. La liste des répétitions douteuses et des coupes de l'accroche (section 3.7).
 3. Le plan des inserts par type (section 7.1).
 4. L'accroche montée (section 7.2).
 5. Le premier morceau (section 7.3), puis tous les autres ensemble.
