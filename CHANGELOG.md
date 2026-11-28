@@ -1,5 +1,6 @@
 # Historique des mises à jour
 
+- 2026-11-28 : Mouvement : tout film sort en 60 fps, visage compris ; une prise plus lente (un avatar à 25 fps) est d'abord interpolée à 60 fps avec RIFE, partie par partie, avant la coupe.
 - 2026-11-28 : Mouvement : une prise sous 50 fps (un avatar à 25 fps) sort quand même à 50 fps ou plus, à un multiple entier de sa cadence (25 donne 50, 30 donne 60), pour que le motion ne saccade pas.
 - 2026-11-28 : Mouvement : au plus 15 % d'images immobiles (au lieu de 40 %), obtenu par un mouvement continu où plusieurs actions se chevauchent sans jamais s'arrêter entre deux temps.
 - 2026-11-28 : Mouvement : une photo sous un zoom ou un panoramique ne compte plus comme du mouvement, chaque plan hors visage doit bouger de lui-même (contrôle des plages figées de 1,4 s ou plus).
