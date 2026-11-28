@@ -1,5 +1,6 @@
 # Historique des mises à jour
 
+- 2026-11-28 : Mouvement : au plus 15 % d'images immobiles (au lieu de 40 %), obtenu par un mouvement continu où plusieurs actions se chevauchent sans jamais s'arrêter entre deux temps.
 - 2026-11-28 : Mouvement : une photo sous un zoom ou un panoramique ne compte plus comme du mouvement, chaque plan hors visage doit bouger de lui-même (contrôle des plages figées de 1,4 s ou plus).
 - 2026-11-24 : Répétitions : une insistance ou une idée reformulée exprès est explicitement gardée (dans l'accroche, chaque idée reste dite une seule fois).
 - 2026-11-24 : Répétitions : un départ abandonné puis redit est maintenant coupé par l'IA, avec ou sans silence, et cherché sur le son ; seuls les cas douteux vont au créateur.
